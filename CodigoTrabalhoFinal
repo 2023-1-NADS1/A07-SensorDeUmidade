@@ -1,0 +1,285 @@
+// Bibliotecas necessárias
+#include <Stepper.h>
+
+// Definições do solenoide
+const int solenoidPin = 2;
+
+// Definições dos motores de passo
+const int stepsPerRevolution = 200; // Número de passos por revolução
+Stepper motor1(stepsPerRevolution, 3, 4, 5); // Pinos do motor 1
+Stepper motor2(stepsPerRevolution, 6, 7, 8); // Pinos do motor 2
+Stepper motor3(stepsPerRevolution, 9, 10, 11); // Pinos do motor 3
+
+// Definição do sensor de umidade
+const int humidityPin = A0;
+
+void setup() {
+  // Configuração dos pinos do solenoide como saída
+  pinMode(solenoidPin, OUTPUT);
+  
+  // Configuração dos pinos dos motores de passo como saída
+  motor1.setSpeed(100); // Velocidade do motor 1 (ajuste conforme necessário)
+  motor2.setSpeed(100); // Velocidade do motor 2 (ajuste conforme necessário)
+  motor3.setSpeed(100); // Velocidade do motor 3 (ajuste conforme necessário)
+  
+  // Configuração do sensor de umidade
+  pinMode(humidityPin, INPUT);
+}
+
+void loop() {
+  // Ativação do solenoide
+  digitalWrite(solenoidPin, HIGH);
+  
+  // Movimento dos motores de passo
+  motor1.step(100); // Número de passos do motor 1 (ajuste conforme necessário)
+  motor2.step(200); // Número de passos do motor 2 (ajuste conforme necessário)
+  motor3.step(300); // Número de passos do motor 3 (ajuste conforme necessário)
+  
+  // Leitura do sensor de umidade
+  int humidityValue = analogRead(humidityPin);
+  
+  // Exemplo de utilização do valor de umidade
+  if (humidityValue > 500) {
+    // Realize alguma ação com base na umidade
+  }
+  
+  // Desativação do solenoide
+  digitalWrite(solenoidPin, LOW);
+  
+  // Aguarde um curto período de tempo
+  delay(1000); // Tempo de espera em milissegundos (ajuste conforme necessário)
+}
+
+
+
+//----------------------------------------------------------------------------------------------
+// Defina o pino do solenoide
+const int solenoidPin = 2;
+
+void setup() {
+  // Configure o pino do solenoide como saída
+  pinMode(solenoidPin, OUTPUT);
+}
+
+void loop() {
+  // Ative o solenoide
+  digitalWrite(solenoidPin, HIGH);
+  
+  // Espere por um curto período de tempo (500 ms)
+  delay(500);
+  
+  // Desative o solenoide
+  digitalWrite(solenoidPin, LOW);
+  
+  // Espere por um curto período de tempo (500 ms)
+  delay(500);
+}
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------
+int sensor = A0;
+const int motor = 7;
+
+void setup()
+{
+  pinMode(sensor, INPUT);
+  pinMode(motor, OUTPUT);
+  Serial.begin(9600);
+}
+
+void loop()
+{
+  digitalWrite(motor, HIGH);
+   delay(1000);
+  digitalWrite(motor, LOW);
+  delay(1000);
+  
+  
+  
+  int sensorValue = analogRead(sensor);
+  Serial.print("Valor: ");
+  Serial.println(sensorValue);
+
+  delay(500);
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+using System;
+using System.IO.Ports;
+
+public class RoboCarrinho
+{
+    static SerialPort serialPort;
+
+    static void Main()
+    {
+        // Inicialização da comunicação com o Arduino
+        serialPort = new SerialPort("COM3", 9600);
+        serialPort.Open();
+
+  
+        while (true)
+        {
+            Console.WriteLine("Digite a instrução para o carrinho (frente, trás, parar, sair):");
+            string instrucao = Console.ReadLine();
+
+            if (instrucao == "frente")
+            {
+                MoverCarrinhoFrente();
+            }
+            else if (instrucao == "trás")
+            {
+                MoverCarrinhoTras();
+            }
+            else if (instrucao == "parar")
+            {
+                PararCarrinho();
+            }
+            else if (instrucao == "sair")
+            {
+                break;
+            }
+            else
+            {
+                Console.WriteLine("Instrução inválida!");
+            }
+
+            if (instrucao == "frente" || instrucao == "trás")
+            {
+                DescerSensor();
+                LerDadosHumidade();
+                SubirSensor();
+            }
+        }
+
+        // fechamento da comunicação
+        serialPort.Close();
+    }
+
+    static void MoverCarrinhoFrente()
+    {
+        // Envie o comando para o Arduino para mover o carrinho para frente
+        serialPort.WriteLine("frente");
+    }
+
+    static void MoverCarrinhoTras()
+    {
+        // Envie o comando para o Arduino para mover o carrinho para trás
+        serialPort.WriteLine("trás");
+    }
+
+    static void PararCarrinho()
+    {
+        // Envie o comando para o Arduino para parar o carrinho
+        serialPort.WriteLine("parar");
+    }
+
+    static void DescerSensor()
+    {
+        // Envie o comando para o Arduino para descer o sensor
+        serialPort.WriteLine("descer_sensor");
+    }
+
+    static void LerDadosHumidade()
+    {
+        // Envie o comando para o Arduino para ler os dados de umidade
+        serialPort.WriteLine("ler_humidade");
+
+        // Espere a resposta do Arduino
+        string resposta = serialPort.ReadLine();
+
+        // Processar os dados de umidade recebidos
+        // Aqui você pode fazer o que quiser com os dados, como enviá-los para o computador
+        Console.WriteLine("Dados de umidade: " + resposta);
+    }
+
+    static void SubirSensor()
+    {
+        // Envie o comando para o Arduino para subir o sensor
+        serialPort.WriteLine("subir_sensor");
+    }
+}
+
+
+
+//-------------------------------------------------------------------------------------------------------------
+
+using System;
+using System.IO.Ports;
+using System.Windows;
+
+namespace WpfApp
+{
+    public partial class MainWindow : Window
+    {
+        private SerialPort serialPort;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            // Configuração da comunicação serial
+            serialPort = new SerialPort("COM3", 9600);
+            serialPort.DataReceived += SerialPort_DataReceived;
+            serialPort.Open();
+        }
+
+        private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            string dadosRecebidos = serialPort.ReadLine();
+            double umidade;
+
+            if (double.TryParse(dadosRecebidos, out umidade))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    // Atualiza a interface com os dados de umidade recebidos
+                    textBoxDadosUmidade.AppendText("Dados de umidade recebidos: " + umidade.ToString("F2") + " %" + Environment.NewLine);
+                });
+            }
+            else
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    // Atualiza a interface com dados inválidos recebidos
+                    textBoxDadosUmidade.AppendText("Dados inválidos recebidos: " + dadosRecebidos + Environment.NewLine);
+                });
+            }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+
+            if (serialPort != null)
+            {
+                serialPort.Close();
+                serialPort.Dispose();
+            }
+        }
+    }
+}
+
+
+
+
+
+//-----------------------------------------------------------------------------------------------------------------------------
+
+
+
+<Window x:Class="WpfApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="InterfaceHumidade" Height="450" Width="800">
+    <Grid>
+        <TextBox x:Name="textBoxDadosUmidade" HorizontalAlignment="Left" Height="400" Margin="10" VerticalAlignment="Top" Width="770" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto">
+            <TextBox.Text>
+                <!-- Dados de exemplo -->
+                Dados de umidade recebidos: 25.50 %&#x0A;
+                Dados de umidade recebidos: 35.20 %&#x0A;
+                Dados inválidos recebidos: InvalidData&#x0A;
+            </TextBox.Text>
+        </TextBox>
+    </Grid>
+</Window>
